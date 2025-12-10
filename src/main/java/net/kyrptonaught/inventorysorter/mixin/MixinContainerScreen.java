@@ -2,6 +2,7 @@ package net.kyrptonaught.inventorysorter.mixin;
 
 import net.fabricmc.api.EnvType;
 import net.fabricmc.api.Environment;
+import net.kyrptonaught.inventorysorter.ButtonType;
 import net.kyrptonaught.inventorysorter.InventoryHelper;
 import net.kyrptonaught.inventorysorter.InventorySorterMod;
 import net.kyrptonaught.inventorysorter.client.InventorySorterModClient;
@@ -74,15 +75,15 @@ public abstract class MixinContainerScreen extends Screen implements SortableCon
         if (getConfig().showSortButton && InventoryHelper.shouldDisplayButtons(client.player)) {
             boolean playerOnly = !InventoryHelper.canSortInventory(client.player);
             if (playerOnly) {
-                invsort$PlayerSortBtn = new SortButtonWidget(this.x + this.backgroundWidth - 20, this.y + (playerOnly ? (backgroundHeight - 95) : 6), playerOnly, client.currentScreen);
+                invsort$PlayerSortBtn = new SortButtonWidget(ButtonType.PLAYER, this.x + this.backgroundWidth - 20, this.y + (playerOnly ? (backgroundHeight - 95) : 6), playerOnly, client.currentScreen);
                 invsort$PlayerSortBtn.visible = compatibility.shouldShowSortButton(PLAYER_INVENTORY);
                 this.addDrawableChild(invsort$PlayerSortBtn);
             } else {
-                invsort$SortBtn = new SortButtonWidget(this.x + this.backgroundWidth - 20, this.y + (playerOnly ? (backgroundHeight - 95) : 6), playerOnly, client.currentScreen);
+                invsort$SortBtn = new SortButtonWidget(ButtonType.INVENTORY, this.x + this.backgroundWidth - 20, this.y + (playerOnly ? (backgroundHeight - 95) : 6), playerOnly, client.currentScreen);
                 this.addDrawableChild(invsort$SortBtn);
 
                 if (getConfig().separateButton) { // If separate button is enabled, add a player inventory sort button
-                    invsort$PlayerSortBtn = new SortButtonWidget(invsort$SortBtn.getX(), this.y + ((this)).getMiddleHeight(), true, client.currentScreen);
+                    invsort$PlayerSortBtn = new SortButtonWidget(ButtonType.PLAYER, invsort$SortBtn.getX(), this.y + ((this)).getMiddleHeight(), true, client.currentScreen);
                     invsort$PlayerSortBtn.visible = compatibility.shouldShowSortButton(PLAYER_INVENTORY);
                     this.addDrawableChild(invsort$PlayerSortBtn);
                 }
