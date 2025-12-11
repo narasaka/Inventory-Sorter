@@ -72,6 +72,7 @@ tasks.jar {
 	from("LICENSE") {
 		rename { "${it}_${project.base.archivesName.get()}"}
 	}
+    exclude("**/e2e/**")
 }
 
 tasks.processResources {
