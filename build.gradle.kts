@@ -4,9 +4,9 @@ plugins {
     id("gg.meza.stonecraft")
 }
 
-stonecutter.replacement(true, "MOD_VERSION_REPL", mod.version)
-
-stonecutter.consts(Pair("hasModMenu", mod.prop("modmenu_version", "0") != "0"))
+stonecutter {
+    constants["hasModMenu"] = mod.prop("modmenu_version", "0") != "0"
+}
 
 modSettings {
 
@@ -72,6 +72,7 @@ tasks.jar {
 	from("LICENSE") {
 		rename { "${it}_${project.base.archivesName.get()}"}
 	}
+    exclude("**/e2e/**")
 }
 
 tasks.processResources {

@@ -1,4 +1,3 @@
-// stonecutter.gradle.kts
 plugins {
     id("dev.kikugie.stonecutter")
     id("gg.meza.stonecraft")
