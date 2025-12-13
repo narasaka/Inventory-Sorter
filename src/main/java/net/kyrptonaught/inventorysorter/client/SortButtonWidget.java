@@ -118,10 +118,10 @@ public class SortButtonWidget extends TexturedButtonWidget {
 
     @Override
     /*? if >= 1.21.11 {*/
-    /*public void drawIcon(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
-    *//*?} else {*/
-    public void renderWidget(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
-    /*?}*/
+    public void drawIcon(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
+    /*?} else {*/
+    /*public void renderWidget(DrawContext context, int mouseX, int mouseY, float deltaTicks) {
+    *//*?}*/
         int offset = 0;
         if (!this.visible) return;
 
