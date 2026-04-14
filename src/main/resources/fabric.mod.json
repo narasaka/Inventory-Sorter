@@ -32,24 +32,15 @@
   "entrypoints": {
     "main": [
       "net.kyrptonaught.${id}.InventorySorterMod"
-    ],
-    "client": [
-      "net.kyrptonaught.${id}.client.InventorySorterModClient"
-    ],
-    "fabric-gametest" : [
-      "net.kyrptonaught.${id}.e2e.SortingTests"
-    ],
-    "modmenu": [
-      "net.kyrptonaught.${id}.client.modmenu.ModMenuIntegration"
     ]
   },
   "depends": {
-    "fabricloader": "*",
-    "fabric-api": ">=${fabricVersion}",
-    "cloth-config": ">=${clothVersion}",
-    "minecraft": ">=${minecraftVersionVirtual}"
+    "fabricloader": ">=${loaderVersion}",
+    "minecraft": "~${minecraftVersion}",
+    "java": ">=25",
+    "fabric-api": "*"
   },
   "recommends": {
-    "modmenu": ">=${modmenuVersion}"
+    "cloth-config": ">=${clothVersion}"
   }
 }

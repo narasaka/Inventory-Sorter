@@ -1,14 +1,9 @@
 {
   "required": true,
   "package": "net.kyrptonaught.inventorysorter.mixin",
-  "compatibilityLevel": "JAVA_21",
+  "compatibilityLevel": "JAVA_25",
   "mixins": [
     "MixinContainer"
-  ],
-  "client": [
-    "MixinContainerScreen",
-    "MixinCreativeInventoryScreen",
-    "RecipeBookScreenAccessor"
   ],
   "injectors": {
     "defaultRequire": 1
