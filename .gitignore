@@ -1,5 +1,12 @@
 # minecraft
 run/
+logs/
+mods/
+remappedSrc/net/kyrptonaught/inventorysorter/client/
+remappedSrc/net/kyrptonaught/inventorysorter/e2e/
+remappedSrc/net/kyrptonaught/inventorysorter/mixin/MixinContainerScreen.java
+remappedSrc/net/kyrptonaught/inventorysorter/mixin/MixinCreativeInventoryScreen.java
+remappedSrc/net/kyrptonaught/inventorysorter/mixin/RecipeBookScreenAccessor.java
 
 .env
 
@@ -45,5 +52,4 @@ hs_err_*.log
 replay_*.log
 *.hprof
 *.jfr
-
 

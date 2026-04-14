@@ -1,66 +1,63 @@
-import gg.meza.stonecraft.mod
+import org.gradle.api.tasks.compile.JavaCompile
 
 plugins {
-    id("gg.meza.stonecraft")
+    id("net.fabricmc.fabric-loom") version "1.16-SNAPSHOT"
+    id("maven-publish")
 }
 
-stonecutter {
-    constants["hasModMenu"] = mod.prop("modmenu_version", "0") != "0"
-}
+val modVersion = property("mod.version") as String
+val modGroup = property("mod.group") as String
+val modId = property("mod.id") as String
+val modName = property("mod.name") as String
+val modDescription = property("mod.description") as String
+val minecraftVersion = property("minecraft_version") as String
+val loaderVersion = property("loader_version") as String
+val fabricVersion = property("fabric_version") as String
+val clothVersion = property("cloth_version") as String
+val modmenuVersion = property("modmenu_version") as String
+val fabricPermissionsApiVersion = property("fabric_permissions_api_version") as String
+val serverTranslationsApiVersion = property("server_translations_api_version") as String
 
-modSettings {
+version = modVersion
+group = modGroup
 
-    clientOptions {
-        darkBackground = true
-        musicVolume = 0.0
-        narrator = false
-        fov = 90
+sourceSets {
+    main {
+        java.setSrcDirs(listOf("remappedSrc"))
+        java.exclude("**/client/**")
+        java.exclude("**/e2e/**")
+        java.exclude("**/mixin/MixinContainerScreen.java")
+        java.exclude("**/mixin/MixinCreativeInventoryScreen.java")
+        java.exclude("**/mixin/RecipeBookScreenAccessor.java")
     }
-
-    variableReplacements = mapOf(
-        "schema" to "\$schema",
-        "clothVersion" to mod.prop("cloth_version"),
-        "modmenuVersion" to mod.prop("modmenu_version", "*"),
-        "fabricPermissionsApiVersion" to mod.prop("fabric_permissions_api_version"),
-        "fabricVersion" to mod.prop("fabric_version"),
-        "minecraftVersionVirtual" to mod.prop("minecraft_version_virtual", stonecutter.current.version),
-    )
 }
 
 repositories {
     mavenLocal()
-	maven("https://maven.terraformersmc.com/releases")
+    maven("https://maven.terraformersmc.com/releases")
     maven("https://maven.shedaniel.me")
     maven("https://maven.meza.gg/releases")
-    maven("https://maven.meza.gg/snapshots")
     maven("https://maven.nucleoid.xyz")
-    maven("https://api.modrinth.com/maven")
 }
 
 dependencies {
-    modImplementation("com.github.erosb:everit-json-schema:1.14.4")
+    minecraft("com.mojang:minecraft:$minecraftVersion")
+    implementation("net.fabricmc:fabric-loader:$loaderVersion")
+    implementation("net.fabricmc.fabric-api:fabric-api:$fabricVersion")
+
+    implementation("com.github.erosb:everit-json-schema:1.14.4")
     include("com.github.erosb:everit-json-schema:1.14.4")
+    implementation("blue.endless:jankson:1.2.3")
+    include("blue.endless:jankson:1.2.3")
     include("org.json:json:20231013")
 
-    modImplementation("me.lucko:fabric-permissions-api:${mod.prop("fabric_permissions_api_version")}")
-    include("me.lucko:fabric-permissions-api:${mod.prop("fabric_permissions_api_version")}")
+    implementation("me.lucko:fabric-permissions-api:$fabricPermissionsApiVersion")
+    include("me.lucko:fabric-permissions-api:$fabricPermissionsApiVersion")
 
-    modImplementation("gg.meza:meza_core-${mod.loader}:${mod.prop("meza_core_version")}+${stonecutter.current.version}")
-    include("gg.meza:meza_core-${mod.loader}:${mod.prop("meza_core_version")}+${stonecutter.current.version}")
+    implementation("xyz.nucleoid:server-translations-api:$serverTranslationsApiVersion")
+    include("xyz.nucleoid:server-translations-api:$serverTranslationsApiVersion")
 
-    modImplementation("xyz.nucleoid:server-translations-api:${mod.prop("server_translations_api_version")}")
-    include("xyz.nucleoid:server-translations-api:${mod.prop("server_translations_api_version")}")
-
-    try {
-        modApi("com.terraformersmc:modmenu:${mod.prop("modmenu_version")}")
-    } catch (e: Exception) {
-        logger.warn("Modmenu not found, skipping dependency.")
-    }
-    modApi("me.shedaniel.cloth:cloth-config-${mod.loader}:${mod.prop("cloth_version")}") {
-        exclude(group = "net.fabricmc.fabric-api")
-    }
-
-    testImplementation("net.fabricmc:fabric-loader-junit:${mod.prop("loader_version")}")
+    testImplementation("net.fabricmc:fabric-loader-junit:$loaderVersion")
     testImplementation("com.google.jimfs:jimfs:1.1")
 }
 
@@ -68,18 +65,55 @@ tasks.test {
     useJUnitPlatform()
 }
 
+tasks.withType<JavaCompile>().configureEach {
+    options.release = 25
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_25
+    targetCompatibility = JavaVersion.VERSION_25
+}
+
 tasks.jar {
-	from("LICENSE") {
-		rename { "${it}_${project.base.archivesName.get()}"}
-	}
+    from("LICENSE") {
+        rename { "${it}_${modId}" }
+    }
     exclude("**/e2e/**")
 }
 
 tasks.processResources {
+    inputs.property("version", modVersion)
+    inputs.property("id", modId)
+    inputs.property("name", modName)
+    inputs.property("description", modDescription)
+    inputs.property("fabricVersion", fabricVersion)
+    inputs.property("clothVersion", clothVersion)
+    inputs.property("modmenuVersion", modmenuVersion)
+    inputs.property("loaderVersion", loaderVersion)
+    inputs.property("minecraftVersion", minecraftVersion)
+    inputs.property("fabricPermissionsApiVersion", fabricPermissionsApiVersion)
+
+    filesMatching("fabric.mod.json") {
+        expand(
+            mapOf(
+                "version" to modVersion,
+                "id" to modId,
+                "name" to modName,
+                "description" to modDescription,
+                "fabricVersion" to fabricVersion,
+                "clothVersion" to clothVersion,
+                "modmenuVersion" to modmenuVersion,
+                "loaderVersion" to loaderVersion,
+                "minecraftVersion" to minecraftVersion,
+                "fabricPermissionsApiVersion" to fabricPermissionsApiVersion,
+            )
+        )
+    }
+
     doLast {
         val resourcesDir = project.layout.buildDirectory.dir("resources/main")
-        val srcDir = resourcesDir.get().dir("assets/${mod.id}/lang")
-        val destDir = resourcesDir.get().dir("data/${mod.id}/lang")
+        val srcDir = resourcesDir.get().dir("assets/$modId/lang")
+        val destDir = resourcesDir.get().dir("data/$modId/lang")
 
         if (srcDir.asFile.exists()) {
             destDir.asFile.mkdirs()
@@ -88,29 +122,9 @@ tasks.processResources {
                 into(destDir)
                 rename { filename -> filename.lowercase() }
             }
-            logger.info("Copied language files from assets/${mod.id}/lang to data/${mod.id}/lang")
+            logger.info("Copied language files from assets/$modId/lang to data/$modId/lang")
         } else {
             logger.error("Source language directory not found: ${srcDir.asFile.absolutePath}")
         }
-    }
-}
-
-publishMods {
-    modrinth {
-        if (mod.isFabric) {
-            requires("fabric-api")
-            optional("modmenu")
-        }
-        requires("cloth-config")
-    }
-
-    curseforge {
-        clientRequired = false
-        serverRequired = true
-        if (mod.isFabric) {
-            requires("fabric-api")
-            optional("modmenu")
-        }
-        requires("cloth-config")
     }
 }
